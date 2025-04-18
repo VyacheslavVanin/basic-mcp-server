@@ -6,12 +6,13 @@ import os
 # Initialize FastMCP server
 mcp = FastMCP("basic-agent")
 
+
 @mcp.tool()
 def read_file(
-        path: str = Field(
-            description='Path to file you want to read',
-        )
-    ):
+    path: str = Field(
+        description="Path to file you want to read",
+    ),
+):
     """
     Return contents of file located at specified path.
 
@@ -19,22 +20,22 @@ def read_file(
         path (str): path to file you want to read
 
     Returns:
-        str: The contents of file requested 
+        str: The contents of file requested
     """
 
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         return f.read()
+
 
 @mcp.tool()
 def list_files(
-        path: str = Field(
-            description='Path to directory to list files from',
-        ),
-        recursive: Optional[bool] = Field(
-            default=False,
-            description='Whether to list files recursively'
-        )
-    ):
+    path: str = Field(
+        description="Path to directory to list files from",
+    ),
+    recursive: Optional[bool] = Field(
+        default=False, description="Whether to list files recursively"
+    ),
+):
     """
     List files in specified directory.
 
@@ -47,7 +48,7 @@ def list_files(
     """
     if not os.path.isdir(path):
         return {"error": f"Path {path} is not a directory"}
-        
+
     if recursive:
         file_list = []
         for root, _, files in os.walk(path):
@@ -59,4 +60,4 @@ def list_files(
 
 
 if __name__ == "__main__":
-    mcp.run(transport='stdio')
+    mcp.run(transport="stdio")
