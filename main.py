@@ -8,6 +8,31 @@ mcp = FastMCP("basic-agent")
 
 
 @mcp.tool()
+def write_whole_file(
+    path: str = Field(
+        description="Path to file you want to read",
+    ),
+    content: str = Field(
+        description="Contents you want to write",
+    ),
+):
+    """
+    Write contents to specified file. The whole file will be overwriten.
+    Use when you need to create or overwrite existing file.
+
+    Args:
+        path (str): path to file you want to write
+        content (str): contents you want to write to file
+
+    Returns:
+        None
+    """
+
+    with open(path, "w") as f:
+        f.write(content)
+
+
+@mcp.tool()
 def read_file(
     path: str = Field(
         description="Path to file you want to read",
