@@ -25,11 +25,15 @@ def write_whole_file(
         content (str): contents you want to write to file
 
     Returns:
-        None
+         The status of the execution: "Success" if successful, or the error text in case of problems.
     """
 
-    with open(path, "w") as f:
-        f.write(content)
+    try:
+        with open(path, "w") as f:
+            f.write(content)
+    except Exception as e:
+        return str(e)
+    return "Success"
 
 
 @mcp.tool()
