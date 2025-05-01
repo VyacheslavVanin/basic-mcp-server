@@ -19,6 +19,7 @@ def write_whole_file(
     """
     Write contents to specified file. The whole file will be overwriten.
     Use when you need to create or overwrite existing file.
+    Prefer use of edit_file if you need to make small changes.
 
     Args:
         path (str): path to file you want to write
