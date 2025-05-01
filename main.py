@@ -88,5 +88,43 @@ def list_files(
         return os.listdir(path)
 
 
+@mcp.tool()
+def edit_files(
+    path: str = Field(
+        description="Path to file to edit",
+    ),
+    match: str = Field(
+        description="The string in file with EXACT fragment (with all spaces, tabs and new lines) of text that must be substituted or deleted",
+    ),
+    substitute: str = Field(
+        description="The string that must be placed instead of 'match'",
+    ),
+):
+    """
+    Edit specified file by replacing the 'match' string with 'substitute'.
+    Use this method when you need to make smaller edits to a file without overwriting the entire file.
+    Prefer to make smaller edits to avoid losing any existing data or functionality.
+
+    Args:
+        path (str): path to file to edit
+        match (str): the string in file with EXACT fragment (with all spaces, tabs and new lines) of text that must be substituted or deleted
+        substitute (str): the string that must be placed instead of 'match'
+
+    Returns:
+         The status of the execution: "Success" if successful, or the error text in case of problems.
+    """
+
+    try:
+        with open(path, "r+") as f:
+            content = f.read()
+            new_content = content.replace(match, substitute)
+            f.seek(0)
+            f.write(new_content)
+            f.truncate()
+    except Exception as e:
+        return f"Error: {str(e)}"
+    return "Success"
+
+
 if __name__ == "__main__":
     mcp.run(transport="stdio")
