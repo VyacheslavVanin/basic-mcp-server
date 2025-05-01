@@ -140,10 +140,13 @@ def run_cli_command(command: str = Field(description="CLI command to run")):
     import subprocess
 
     try:
-        result = subprocess.run(command, shell=True, check=True, text=True, capture_output=True)
+        result = subprocess.run(
+            command, shell=True, check=True, text=True, capture_output=True
+        )
         return result.stdout
     except subprocess.CalledProcessError as e:
         return f"Error: {e.stderr}"
+
 
 if __name__ == "__main__":
     mcp.run(transport="stdio")
