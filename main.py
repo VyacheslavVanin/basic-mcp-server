@@ -149,5 +149,26 @@ def run_cli_command(command: str = Field(description="CLI command to run")):
         return f"Error: {e.stderr}"
 
 
+@mcp.tool()
+def create_directory(
+    path: str = Field(
+        description="Path to directory you want to create",
+    ),
+):
+    """
+    Create a directory at the specified path.
+
+    Args:
+        path (str): path to directory you want to create
+
+    Returns:
+        str: The status of the execution: "Success" if successful, or the error text in case of problems.
+    """
+    try:
+        os.makedirs(path, exist_ok=True)
+        return "Success"
+    except Exception as e:
+        return str(e)
+
 if __name__ == "__main__":
     mcp.run(transport="stdio")
