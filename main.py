@@ -30,6 +30,9 @@ def write_whole_file(
     """
 
     try:
+        directory = os.path.dirname(path)
+        os.makedirs(directory, exist_ok=True)
+
         with open(path, "w") as f:
             f.write(content)
     except Exception as e:
@@ -95,7 +98,7 @@ def edit_files(
         description="Path to file to edit",
     ),
     match: str = Field(
-        description="The string in file with EXACT fragment (with all spaces, tabs and new lines) of text that must be substituted or deleted",
+        description="The string in file with EXACT fragment (with all spaces, tabs and new lines) of text that must be substituted or deleted. Can not be empty string",
     ),
     substitute: str = Field(
         description="The string that must be placed instead of 'match'",
@@ -108,22 +111,27 @@ def edit_files(
 
     Args:
         path (str): path to file to edit
-        match (str): the string in file with EXACT fragment (with all spaces, tabs and new lines) of text that must be substituted or deleted
+        match (str): the string in file with EXACT fragment (with all spaces, tabs and new lines) of text that must be substituted or deleted. Can not be empty string.
         substitute (str): the string that must be placed instead of 'match'
 
     Returns:
          The status of the execution: "Success" if successful, or the error text in case of problems.
     """
 
+    if not match:
+        return "Error: 'match' argument cannot be empty string. Provide correct part of file."
+
     try:
         with open(path, "r+") as f:
             content = f.read()
-            new_content = content.replace(match, substitute)
+            if content.find(match) == -1:
+                return "Error: match not found in file contents"
+            new_content = content.replace(match, substitute, 1)
             f.seek(0)
             f.write(new_content)
             f.truncate()
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"Error: {str(e)}, file not edited"
     return "Success"
 
 
@@ -169,6 +177,7 @@ def create_directory(
         return "Success"
     except Exception as e:
         return str(e)
+
 
 if __name__ == "__main__":
     mcp.run(transport="stdio")
