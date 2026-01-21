@@ -41,6 +41,35 @@ def write_whole_file(
 
 
 @mcp.tool()
+def write_multiple_files(
+    files: list[dict] = Field(
+        description="List of files to write, each with 'path' and 'content' keys"
+    )
+):
+    """
+    Write contents to multiple files. Each file will be overwritten.
+    Use when you need to create or overwrite multiple files at once.
+    Args:
+        files (list[dict]): List of files to write, each with 'path' and 'content' keys. Example: [{"path": "a.txt", "content": "aaaaaa"}, {"path": "b.c", "content": "int main(){}"}]
+    Returns:
+        dict[str, str]: The status of the execution for each file: "Success" or error message.
+    """
+    results = {}
+    for file_info in files:
+        path = file_info["path"]
+        content = file_info["content"]
+        try:
+            directory = os.path.dirname(path)
+            os.makedirs(directory, exist_ok=True)
+            with open(path, "w") as f:
+                f.write(content)
+            results[path] = "Success"
+        except Exception as e:
+            results[path] = str(e)
+    return results
+
+
+@mcp.tool()
 def edit_files(
     path: str = Field(
         description="Path to file to edit",

@@ -28,6 +28,32 @@ def read_file(
 
 
 @mcp.tool()
+def read_multiple_files(
+    paths: list[str] = Field(
+        description="List of files you want to read",
+    ),
+):
+    """
+    Return dictionary with filenames as keys and contents of file as values.
+    If failed to read file then value is None.
+
+    Args:
+        paths (list[str]): List of files you want to read
+
+    Returns:
+        dict[str, str|None]: The contents of file requested
+    """
+    ret = dict()
+    for path in paths:
+        try:
+            with open(path, "r") as f:
+                ret[path] = f.read()
+        except Exception as e:
+            ret[path] = None
+    return ret
+
+
+@mcp.tool()
 def list_files(
     path: str = Field(
         description="Path to directory to list files from",
