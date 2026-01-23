@@ -44,7 +44,7 @@ def write_whole_file(
 def write_multiple_files(
     files: list[dict] = Field(
         description="List of files to write, each with 'path' and 'content' keys"
-    )
+    ),
 ):
     """
     Write contents to multiple files. Each file will be overwritten.
