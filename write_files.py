@@ -3,6 +3,35 @@ from pydantic import Field
 from typing import Optional
 import os
 
+
+def validate_path(path: str) -> tuple[bool, str]:
+    """
+    Validates that the path is absolute and does not contain '..' symbols.
+
+    Args:
+        path (str): Path to validate
+
+    Returns:
+        tuple[bool, str]: (is_valid, error_message_if_invalid)
+    """
+    # Check if path is absolute
+    if not os.path.isabs(path):
+        return (
+            False,
+            f"Error: Path '{path}' is not absolute. Only absolute paths are allowed.",
+        )
+
+    # Normalize the path and check for '..'
+    normalized_path = os.path.normpath(path)
+    if ".." in normalized_path.split(os.sep):
+        return (
+            False,
+            f"Error: Path '{path}' contains '..' symbols which are not allowed.",
+        )
+
+    return True, ""
+
+
 # Initialize FastMCP server
 mcp = FastMCP("basic-write-files-agent")
 
@@ -28,6 +57,11 @@ def write_whole_file(
     Returns:
          The status of the execution: "Success" if successful, or the error text in case of problems.
     """
+
+    # Validate the path
+    is_valid, error_msg = validate_path(path)
+    if not is_valid:
+        return error_msg
 
     try:
         directory = os.path.dirname(path)
@@ -58,6 +92,13 @@ def write_multiple_files(
     for file_info in files:
         path = file_info["path"]
         content = file_info["content"]
+
+        # Validate the path
+        is_valid, error_msg = validate_path(path)
+        if not is_valid:
+            results[path] = error_msg
+            continue
+
         try:
             directory = os.path.dirname(path)
             os.makedirs(directory, exist_ok=True)
@@ -98,6 +139,11 @@ def edit_files(
     if not match:
         return "Error: 'match' argument cannot be empty string. Provide correct part of file."
 
+    # Validate the path
+    is_valid, error_msg = validate_path(path)
+    if not is_valid:
+        return error_msg
+
     try:
         with open(path, "r+") as f:
             content = f.read()
@@ -127,6 +173,12 @@ def create_directory(
     Returns:
         str: The status of the execution: "Success" if successful, or the error text in case of problems.
     """
+
+    # Validate the path
+    is_valid, error_msg = validate_path(path)
+    if not is_valid:
+        return error_msg
+
     try:
         os.makedirs(path, exist_ok=True)
         return "Success"
