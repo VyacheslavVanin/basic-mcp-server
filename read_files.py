@@ -48,7 +48,7 @@ def read_multiple_files(
         try:
             with open(path, "r") as f:
                 ret[path] = f.read()
-        except Exception as e:
+        except Exception:
             ret[path] = None
     return ret
 

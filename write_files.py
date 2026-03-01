@@ -1,6 +1,5 @@
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
-from typing import Optional
 import os
 
 
