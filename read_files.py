@@ -61,29 +61,33 @@ def list_files(
     recursive: Optional[bool] = Field(
         default=False, description="Whether to list files recursively"
     ),
+    include_hidden: Optional[bool] = Field(
+        default=False, description="Whether to include hidden files"
+    ),
 ):
     """
     List files in specified directory.
-
     Args:
-        path (str): directory path to list files from
-        recursive (bool): whether to list files recursively
-
+        path (str): Directory path to list files from.
+        recursive (bool): Whether to list files recursively. Note: Be cautious when using this with large directories as it may significantly increase processing time and memory usage.
+        include_hidden (bool): Whether to include hidden files. Note: This can capture too many files if applied to the project's root directory (e.g., '.env' or '.git' directories).
     Returns:
         list: List of file paths in the directory
     """
     if not os.path.isdir(path):
         return {"error": f"Path {path} is not a directory"}
-
     if recursive:
         file_list = []
-        for root, _, files in os.walk(path):
+        for root, dirnames, files in os.walk(path):
+            # Filter out hidden directories unless include_hidden is True
+            if not include_hidden:
+                dirnames[:] = [d for d in dirnames if not d.startswith('.')]
             for file in files:
-                file_list.append(os.path.join(root, file))
+                if include_hidden or not file.startswith('.'):
+                    file_list.append(os.path.join(root, file))
         return file_list
     else:
-        return os.listdir(path)
-
-
-if __name__ == "__main__":
-    mcp.run(transport="stdio")
+        files = os.listdir(path)
+        if not include_hidden:
+            files = [f for f in files if not f.startswith('.')]
+        return files
