@@ -91,3 +91,6 @@ def list_files(
         if not include_hidden:
             files = [f for f in files if not f.startswith('.')]
         return files
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio")
